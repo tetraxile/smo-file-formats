@@ -6,3 +6,5 @@ currently supported formats:
 * Yaz0
 * SARC
 * SZS
+* MSBP
+* MSBT
