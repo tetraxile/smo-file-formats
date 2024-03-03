@@ -2,6 +2,20 @@ import argparse
 from sarc import SARC
 from yaz0 import Yaz0
 
+
+class SZS:
+    def __init__(self, stream: bytes):
+        uncompressed = Yaz0.decompress(stream)
+        self._sarc = SARC(uncompressed)
+
+    def save(self, outdir: str, quiet: bool = True):
+        self._sarc.save(outdir, quiet=quiet)
+
+    @property
+    def files(self):
+        return self._sarc.files
+
+
 def main():
     parser = argparse.ArgumentParser(description="extract SZS archives")
     parser.add_argument("infile")
@@ -10,9 +24,10 @@ def main():
 
     args = parser.parse_args()
 
-    uncompressed = Yaz0.decompress_file(args.infile)
-    sarc = SARC(uncompressed)
-    sarc.save(args.outdir, quiet=args.quiet)
+    with open(args.infile, "rb") as f:
+        szs = SZS(f.read())
+
+    szs.save(args.outdir, quiet=args.quiet)
 
 
 if __name__ == "__main__":
