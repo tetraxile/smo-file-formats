@@ -1,11 +1,11 @@
 import argparse
+import yaz0
 from sarc import SARC
-from yaz0 import Yaz0
 
 
 class SZS:
     def __init__(self, stream: bytes):
-        uncompressed = Yaz0.decompress(stream)
+        uncompressed = yaz0.decompress(stream)
         self._sarc = SARC(uncompressed)
 
     def save(self, outdir: str, quiet: bool = True):

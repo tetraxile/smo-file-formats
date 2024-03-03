@@ -5,50 +5,50 @@ import os
 from util import BinaryReader
 
 
+class Header:
+    def __init__(self, reader: BinaryReader):
+        reader.read_signature(4, "SARC")
+        assert reader.read_u16() == 0x14 # header size
+        reader.read_byte_order()
+        self.file_size = reader.read_u32()
+        self.data_offset = reader.read_u32()
+        version = reader.read_u16()
+        reader.read(2) # reserved
+
+class SFAT:
+    class Entry:
+        def __init__(self, reader: BinaryReader):
+            self.filename_hash = reader.read_u32()
+            self.file_attributes = reader.read_u32()
+            self.start_offset = reader.read_u32()
+            self.end_offset = reader.read_u32()
+
+    def __init__(self, reader: BinaryReader):
+        reader.read_signature(4, "SFAT")
+        assert reader.read_u16() == 0xc # header size
+        self.file_count = reader.read_u16()
+        hash_key = reader.read_u32()
+
+        self.files = [self.Entry(reader) for _ in range(self.file_count)]
+
+class SFNT:
+    def __init__(self, reader: BinaryReader, count: int):
+        reader.read_signature(4, "SFNT")
+        assert reader.read_u16() == 0x8 # header size
+        reader.read(2) # reserved
+        
+        self.filenames = []
+        for _ in range(count):
+            self.filenames.append(reader.read_string("utf-8"))
+            reader.align(4)
+
+
 class SARC:
-    class Header:
-        def __init__(self, reader: BinaryReader):
-            reader.read_signature(4, "SARC")
-            assert reader.read_u16() == 0x14 # header size
-            reader.read_byte_order()
-            self.file_size = reader.read_u32()
-            self.data_offset = reader.read_u32()
-            version = reader.read_u16()
-            reader.read(2) # reserved
-
-    class SFAT:
-        class Entry:
-            def __init__(self, reader: BinaryReader):
-                self.filename_hash = reader.read_u32()
-                self.file_attributes = reader.read_u32()
-                self.start_offset = reader.read_u32()
-                self.end_offset = reader.read_u32()
-
-        def __init__(self, reader: BinaryReader):
-            reader.read_signature(4, "SFAT")
-            assert reader.read_u16() == 0xc # header size
-            self.file_count = reader.read_u16()
-            hash_key = reader.read_u32()
-
-            self.files = [self.Entry(reader) for _ in range(self.file_count)]
-
-    class SFNT:
-        def __init__(self, reader: BinaryReader, count: int):
-            reader.read_signature(4, "SFNT")
-            assert reader.read_u16() == 0x8 # header size
-            reader.read(2) # reserved
-            
-            self.filenames = []
-            for _ in range(count):
-                self.filenames.append(reader.read_string("utf-8"))
-                reader.align(4)
-
-
     def __init__(self, stream: bytes):
         reader = BinaryReader(stream)
-        self.header = self.Header(reader)
-        sfat = self.SFAT(reader)
-        sfnt = self.SFNT(reader, sfat.file_count)
+        self.header = Header(reader)
+        sfat = SFAT(reader)
+        sfnt = SFNT(reader, sfat.file_count)
 
         self.files = {}
         for file, filename in zip(sfat.files, sfnt.filenames):
