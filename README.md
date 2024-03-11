@@ -8,3 +8,4 @@ currently supported formats:
 * SZS
 * MSBP
 * MSBT
+* BYML
