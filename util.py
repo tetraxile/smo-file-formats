@@ -1,6 +1,18 @@
 import enum
 import struct
+import sys
 import typing
+
+
+class Log:
+    @staticmethod
+    def error(message: str) -> typing.NoReturn:
+        print(f"error: {message}", file=sys.stderr)
+        sys.exit(1)
+
+    @staticmethod
+    def info(message: str):
+        print(f"info: {message}")
 
 
 class ByteOrder(enum.Enum):
@@ -148,7 +160,7 @@ class BinaryReader:
     def read_signature(self, size: int, expected: str) -> str:
         signature = self.read_string("ascii", size)
         if signature != expected:
-            raise OSError(f"invalid signature; got {signature}, expected {expected}")
+            Log.error(f"file signature was {signature}, expected {expected}")
         
         return signature
     
@@ -160,7 +172,7 @@ class BinaryReader:
         elif byte_order == b'\xFF\xFE':
             self.byte_order = ByteOrder.little
         else:
-            raise OSError("invalid byte order")
+            Log.error("invalid byte order")
         
         return self.byte_order
     

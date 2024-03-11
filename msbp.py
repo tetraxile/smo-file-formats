@@ -3,7 +3,7 @@
 import argparse
 import json
 import lms
-from util import BinaryReader
+from util import BinaryReader, Log
 
 
 class CLR1(lms.Block):
@@ -181,7 +181,7 @@ class MSBP:
                 block = ctors[signature](reader, header.encoding)
                 self.blocks[signature] = block
             else:
-                raise NotImplementedError(f"unknown section `{signature}`")
+                Log.error(f"unknown section `{signature}`")
             
             reader.seek(block_start + block_size + 0x10)
             reader.align(0x10)
@@ -199,7 +199,7 @@ class MSBP:
         # attributes
         attr_blocks = ("ATI2", "ALB1", "ALI2")
         if all(block in self.blocks for block in attr_blocks):
-            raise NotImplementedError("unused in odyssey")
+            Log.info("attribute blocks are unused in odyssey")
 
         # tags
         tag_blocks = ("TGG2", "TAG2", "TGP2", "TGL2")

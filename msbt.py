@@ -4,7 +4,7 @@ import argparse
 import json
 import lms
 from msbp import MSBP
-from util import BinaryReader
+from util import BinaryReader, Log
 
 
 class LBL1(lms.LabelBlock):
@@ -94,7 +94,7 @@ class MSBT:
                 block = ctors[signature](reader, header.encoding, project_data)
                 self.blocks[signature] = block
             else:
-                raise NotImplementedError(f"unknown section `{signature}`")
+                Log.error(f"unknown section `{signature}`")
 
             reader.seek(block_start + block_size + 0x10)
             reader.align(0x10)

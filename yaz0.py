@@ -3,13 +3,12 @@
 import argparse
 import os
 import struct
-import sys
+from util import Log
 
 def decompress(src: bytes) -> bytes:
     signature = src[:4]
     if signature != b'Yaz0':
-        print(f"error: file signature was {signature}, expected {b'Yaz0'}", file=sys.stderr)
-        sys.exit(1)
+        Log.error(f"file signature was {signature}, expected 'Yaz0'")
 
     uncompressed_size, = struct.unpack(">I", src[4:8])
 
@@ -62,8 +61,7 @@ def decompress(src: bytes) -> bytes:
 
 def decompress_file(filename: str) -> bytes:
     if not os.path.isfile(filename):
-        print(f"error: input file {filename} does not exist", file=sys.stderr)
-        sys.exit(1)
+        Log.error(f"input file {filename} does not exist")
 
     with open(filename, "rb") as f:
         return decompress(f.read())

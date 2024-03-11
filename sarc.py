@@ -2,7 +2,7 @@
 
 import argparse
 import os
-from util import BinaryReader
+from util import BinaryReader, Log
 
 
 class Header:
@@ -69,7 +69,7 @@ class SARC:
                 os.makedirs(os.path.dirname(path), exist_ok=True)
 
             if not quiet:
-                print(f"saved {path}")
+                Log.info(f"saved {path}")
 
                 with open(path, "wb") as f:
                     f.write(file)
