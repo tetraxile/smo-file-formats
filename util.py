@@ -141,6 +141,16 @@ class BinaryReader:
 
     def read_u64s(self, count: int) -> list[int]:
         return [self.read_u64() for _ in range(count)]
+
+    def read_f16s(self, count: int) -> list[float]:
+        return [self.read_f16() for _ in range(count)]
+
+    def read_f32s(self, count: int) -> list[float]:
+        return [self.read_f32() for _ in range(count)]
+
+    def read_f64s(self, count: int) -> list[float]:
+        return [self.read_f64() for _ in range(count)]
+
         
     def read_string(self, encoding_name: str, size: int = -1, char_size: int = 1) -> str:
         if size == -1:
