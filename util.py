@@ -190,3 +190,65 @@ class BinaryReader:
         pos = self.position
         delta = (-pos % alignment + alignment) % alignment
         self.seek(delta, relative=True)
+
+
+
+class Vec3f:
+    def __init__(self, x: float = 0.0, y: float = 0.0, z: float = 0.0):
+        self.x = x
+        self.y = y
+        self.z = z
+    
+    def __repr__(self):
+        return f"({self.x}, {self.y}, {self.z})"
+    
+    def __add__(self, other):
+        return Vec3f(self.x + other.x, self.y + other.y, self.z + other.z)
+    
+    def __sub__(self, other):
+        return Vec3f(self.x - other.x, self.y - other.y, self.z - other.z)
+    
+    def __mul__(self, other: float):
+        return Vec3f(self.x * other, self.y * other, self.z * other)
+    
+    def __truediv__(self, other: float):
+        return Vec3f(self.x / other, self.y / other, self.z / other)
+    
+    def __eq__(self, other):
+        return all((self.x == other.x, self.y == other.y, self.z == other.z))
+    
+    def __iter__(self):
+        return iter((self.x, self.y, self.z))
+    
+    def __hash__(self):
+        return hash((self.x, self.y, self.z))
+
+    def dot(self, other):
+        return self.x * other.x + self.y * other.y + self.z * other.z
+    
+    def cross(self, other):
+        return Vec3f(self.y * other.z - self.z * other.y,
+                    self.z * other.x - self.x * other.z,
+                    self.x * other.y - self.y * other.x)
+    
+    def mag(self):
+        return math.sqrt(self.x * self.x + self.y * self.y + self.z * self.z)
+
+    def normalized(self):
+        return self / self.mag()
+    
+    @staticmethod
+    def from_dict(d: dict[str, float]):
+        return Vec3f(d.get('X', 0), d.get('Y', 0), d.get('Z', 0))
+
+
+class Triangle:
+    def __init__(self, a: Vec3f, b: Vec3f, c: Vec3f):
+        self.a = a
+        self.b = b
+        self.c = c
+        self.p = (a, b, c)
+        self.normal = Vec3f.cross(self.b - self.a, self.c - self.a).normalized()
+
+    def __repr__(self):
+        return "Triangle({}, {}, {})".format(*self.p)
