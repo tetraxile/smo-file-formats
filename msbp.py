@@ -140,7 +140,7 @@ class SYL3(lms.Block):
             region_width = reader.read_u32()
             line_num = reader.read_u32()
             font_idx = reader.read_u32()
-            base_color_idx = reader.read_i32()
+            base_color_idx = reader.read_s32()
             self.styles.append((region_width, line_num, font_idx, base_color_idx))
 
 

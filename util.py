@@ -72,13 +72,13 @@ class BinaryReader:
         else:
             return True
         
-    def read_i8(self) -> int:
+    def read_s8(self) -> int:
         return self._read(1, "b", int)
 
     def read_u8(self) -> int:
         return self._read(1, "B", int)
         
-    def read_i16(self) -> int:
+    def read_s16(self) -> int:
         return self._read(2, "h", int)
 
     def read_u16(self) -> int:
@@ -91,13 +91,13 @@ class BinaryReader:
         else:
             return struct.unpack(">I", b'\x00' + out)[0]
         
-    def read_i32(self) -> int:
+    def read_s32(self) -> int:
         return self._read(4, "i", int)
 
     def read_u32(self) -> int:
         return self._read(4, "I", int)
         
-    def read_i64(self) -> int:
+    def read_s64(self) -> int:
         return self._read(8, "q", int)
 
     def read_u64(self) -> int:
@@ -107,37 +107,37 @@ class BinaryReader:
         return self.read(size)
     
     def read_f16(self) -> float:
-        return self._read(2, "s", int)
+        return self._read(2, "s", float)
         
     def read_f32(self) -> float:
-        return self._read(4, "f", int)
+        return self._read(4, "f", float)
     
     def read_f64(self) -> float:
-        return self._read(8, "d", int)
+        return self._read(8, "d", float)
     
     def read_bools(self, count: int) -> list[bool]:
         return [self.read_bool() for _ in range(count)]
         
-    def read_i8s(self, count: int) -> list[int]:
-        return [self.read_i8() for _ in range(count)]
+    def read_s8s(self, count: int) -> list[int]:
+        return [self.read_s8() for _ in range(count)]
 
     def read_u8s(self, count: int) -> list[int]:
         return [self.read_u8() for _ in range(count)]
         
-    def read_i16s(self, count: int) -> list[int]:
-        return [self.read_i16() for _ in range(count)]
+    def read_s16s(self, count: int) -> list[int]:
+        return [self.read_s16() for _ in range(count)]
 
     def read_u16s(self, count: int) -> list[int]:
         return [self.read_u16() for _ in range(count)]
         
-    def read_i32s(self, count: int) -> list[int]:
-        return [self.read_i32() for _ in range(count)]
+    def read_s32s(self, count: int) -> list[int]:
+        return [self.read_s32() for _ in range(count)]
 
     def read_u32s(self, count: int) -> list[int]:
         return [self.read_u32() for _ in range(count)]
         
-    def read_i64s(self, count: int) -> list[int]:
-        return [self.read_i64() for _ in range(count)]
+    def read_s64s(self, count: int) -> list[int]:
+        return [self.read_s64() for _ in range(count)]
 
     def read_u64s(self, count: int) -> list[int]:
         return [self.read_u64() for _ in range(count)]
@@ -151,7 +151,6 @@ class BinaryReader:
     def read_f64s(self, count: int) -> list[float]:
         return [self.read_f64() for _ in range(count)]
 
-        
     def read_string(self, encoding_name: str, size: int = -1, char_size: int = 1) -> str:
         if size == -1:
             out = b""

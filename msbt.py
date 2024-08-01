@@ -55,7 +55,7 @@ class TXT2(lms.Block):
                     params.append((param["name"], {
                         0: reader.read_u8,
                         1: reader.read_u16,
-                        2: reader.read_i16,
+                        2: reader.read_s16,
                         5: reader.read_u32,
                         6: reader.read_f32,
                         8: lambda: self.read_encoded_string(reader, reader.read_u16()),
