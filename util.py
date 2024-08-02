@@ -191,6 +191,94 @@ class BinaryReader:
         self.seek(delta, relative=True)
 
 
+class BinaryWriter:
+    def __init__(self, size: int = 0, byte_order: ByteOrder = ByteOrder.little):
+        self.stream = bytearray(size)
+        self.byte_order = byte_order
+        self._position = 0
+
+    @property
+    def position(self) -> int:
+        return self._position
+
+    def save(self, filename: str):
+        with open(filename, "wb") as f:
+            f.write(self.stream)
+
+    def seek(self, offset: int, *, relative: bool = False):
+        if relative:
+            self._position += offset
+        else:
+            self._position = offset
+        
+        self._fill_bytes(0)
+
+    def align(self, alignment: int):
+        pos = self.position
+        delta = (-pos % alignment + alignment) % alignment
+        self.seek(delta, relative=True)
+
+    def _fill_bytes(self, offset: int, relative: bool = True):
+        bytes_to_add = offset - len(self.stream)
+        if relative:
+            bytes_to_add += self.position
+
+        if bytes_to_add > 0:
+            self.stream += bytearray(bytes_to_add)
+
+    def write(self, raw: bytes):
+        self._fill_bytes(len(raw))
+        for byte in raw:
+            self.stream[self._position] = byte
+            self._position += 1
+
+    def _write(self, fmt: str, value):
+        endianness = self.byte_order.value
+        raw = struct.pack(endianness + fmt, value)
+        self.write(raw)
+
+    def write_bool(self, value: bool):
+        self._write("?", value)
+
+    def write_s8(self, value: int):
+        self._write("b", value)
+
+    def write_u8(self, value: int):
+        self._write("B", value)
+
+    def write_s16(self, value: int):
+        self._write("h", value)
+
+    def write_u16(self, value: int):
+        self._write("H", value)
+
+    def write_u24(self, value: int):
+        if self.byte_order == ByteOrder.little:
+            self.write(struct.pack("<I", value)[:3])
+        else:
+            self.write(struct.pack(">I", value)[1:])
+
+    def write_s32(self, value: int):
+        self._write("i", value)
+
+    def write_u32(self, value: int):
+        self._write("I", value)
+
+    def write_s64(self, value: int):
+        self._write("q", value)
+
+    def write_u64(self, value: int):
+        self._write("Q", value)
+
+    def write_f32(self, value: float):
+        self._write("f", value)
+
+    def write_f64(self, value: float):
+        self._write("d", value)
+
+    def write_bytes(self, value: bytes):
+        self.write(value)
+
 
 class Vec3f:
     def __init__(self, x: float = 0.0, y: float = 0.0, z: float = 0.0):
